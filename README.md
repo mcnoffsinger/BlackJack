@@ -26,3 +26,14 @@ Card Game
 3. Navigate to the repo folder
 4. Run: python game.py
 5. Follow on-screen prompts
+
+## Win & Lose Conditions
+### Win
+* If the user gets a hand with the value of 21
+* If the user gets a hand with a value higher than the dealer but not over 21
+### Lose
+* If the user gets a hand over the value of 21
+* if the player gets a hand with a value lower than the dealer and the dealer's value is not over 21
+
+## Controls / Input
+User will only use their mouse clicker to make descisions during the game.
