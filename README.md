@@ -16,4 +16,5 @@ Card Game
 5. Player can double down or surrender
 
 ## How to Run
-tbd
+* Python 3.8+
+* Pygame
