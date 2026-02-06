@@ -28,6 +28,15 @@ big_font = pygame.font.Font(None, 72)
 SUITS = ['Hearts', 'Diamonds', 'Clubs', 'Spades']
 RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
 
+# -------------------- RUSSIAN BLACKJACK IMAGES --------------------
+player_img = pygame.Surface((120, 120), pygame.SRCALPHA)
+player_img.fill((0, 0, 0, 0))  # Transparent
+pygame.draw.circle(player_img, (255, 255, 0), (60, 60), 50)  # Face
+pygame.draw.rect(player_img, (0, 0, 0), (80, 50, 50, 10))  # Gun pointing at player
+
+dealer_img = pygame.Surface((120, 120), pygame.SRCALPHA)
+dealer_img.fill((0, 0, 0, 0))
+pygame.draw.circle(dealer_img, (255, 255, 255), (60, 60), 50)  # Dealer face
 
 # -------------------- GAME LOGIC --------------------
 def create_deck():
@@ -76,17 +85,29 @@ def draw_dropdown(title, value, options, x, y, w, h, open_menu):
     opts = []
     if open_menu:
         for i, o in enumerate(options):
-            r = draw_button(o, x, y + (i + 1) * h, w, h, DARK)
+            r = draw_button(
+                o,
+                x,
+                y - (i + 1) * h,
+                w,
+                h,
+                DARK
+            )
             opts.append((o, r))
     return main, opts
 
 
 def draw_card(card, x, y):
+    # Draw card background
     r = pygame.Rect(x, y, 80, 120)
     pygame.draw.rect(screen, WHITE, r)
     pygame.draw.rect(screen, BLACK, r, 2)
+
+    # Draw rank and suit
+    suit_symbols = {'Hearts':'♥', 'Diamonds':'♦', 'Clubs':'♣', 'Spades':'♠'}
     color = RED if card[1] in ['Hearts', 'Diamonds'] else BLACK
-    screen.blit(font.render(card[0], True, color), (x + 6, y + 6))
+    text = f"{card[0]}{suit_symbols[card[1]]}"
+    screen.blit(font.render(text, True, color), (x + 6, y + 6))
 
 
 # -------------------- GAME CLASS --------------------
@@ -108,6 +129,7 @@ class Game:
         }
 
         self.reset_round()
+        self.lost_screen = False
 
     def reset_round(self):
         self.deck = create_deck()
@@ -118,6 +140,7 @@ class Game:
         self.over = False
         self.msg = ""
         self.bet = max(10, min(self.bet, self.money))
+        self.lost_screen = False
 
     def deal(self):
         count = 2 + self.upgrades["cards"]["lvl"]
@@ -161,23 +184,31 @@ class Game:
             self.over = True
 
     def win(self):
-        mult = 1 + self.upgrades["payout"]["lvl"] * 0.25
-        gain = int(self.bet * mult)
-        self.money += gain
-        self.wins += 1
-        if self.wins % 2 == 0:
-            self.up_points += 1
-        self.msg = f"Win +${gain}"
-        self.over = True
+        if self.roulette:
+            self.money += 1000000
+            self.msg = "You survived! +$1,000,000 💰"
+            self.over = True
+        else:
+            mult = 1 + self.upgrades["payout"]["lvl"] * 0.25
+            gain = int(self.bet * mult)
+            self.money += gain
+            self.wins += 1
+            if self.wins % 2 == 0:
+                self.up_points += 1
+            self.msg = f"Win +${gain}"
+            self.over = True
 
     def lose(self):
         if self.roulette:
-            self.money = 0
-            self.msg = "BANG 💥"
+            self.msg = "You died 💥"
+            pygame.display.flip()
+            pygame.time.wait(1500)
+            pygame.quit()
+            exit()
         else:
-            self.money -= self.bet
-            self.msg = "Lose"
-        self.over = True
+            self.msg = "You lost! Want to play again?"
+            self.lost_screen = True
+            self.over = True
 
 
 # -------------------- MAIN LOOP --------------------
@@ -186,6 +217,7 @@ def main():
     g = Game()
     start = time.time()
     run = True
+    anim_offset = 0  # for simple bounce animation on losing screen
 
     while run:
         t = time.time() - start
@@ -196,7 +228,10 @@ def main():
                 run = False
 
             if e.type == pygame.MOUSEBUTTONDOWN:
-                if not g.dealt:
+                if g.lost_screen:
+                    g.reset_round()
+                    anim_offset = 0
+                elif not g.dealt:
                     if deal.collidepoint(mouse):
                         g.deal()
                     if bet_up.collidepoint(mouse):
@@ -228,7 +263,20 @@ def main():
                     else:
                         if nxt.collidepoint(mouse):
                             g.reset_round()
+                            anim_offset = 0
 
+        # ---------------- LOST SCREEN ----------------
+        if g.lost_screen:
+            anim_offset += 0.1
+            screen.fill(RED)
+            y_offset = int(10 * math.sin(anim_offset))
+            screen.blit(big_font.render("You lost!", True, WHITE), (250, 200 + y_offset))
+            screen.blit(font.render("Click anywhere to play again", True, WHITE), (260, 300 + y_offset))
+            pygame.display.flip()
+            clock.tick(60)
+            continue
+
+        # ---------------- NORMAL GAME SCREEN ----------------
         screen.fill(GREEN)
 
         screen.blit(big_font.render("BlackJack", True, WHITE), (260, 10))
@@ -242,9 +290,7 @@ def main():
 
         if not g.dealt:
             deal = draw_button("DEAL", 120, 260, 160, 60)
-
             ai_btn, ai_opts = draw_dropdown("AI", g.ai, AI_DIFFICULTIES, 520, 180, 240, 35, g.ai_open)
-
             rr_col = rainbow(t * 3) if g.roulette else GRAY
             rr = draw_button("Russian BlackJack", 520, 230, 240, 45, rr_col)
 
@@ -260,10 +306,14 @@ def main():
             hit = stand = nxt = pygame.Rect(0, 0, 0, 0)
 
         else:
-            for i, c in enumerate(g.dealer):
-                draw_card(c, 50 + i * 90, 180)
-            for i, c in enumerate(g.player):
-                draw_card(c, 50 + i * 90, 360)
+            if g.roulette:
+                screen.blit(dealer_img, (50, 180))
+                screen.blit(player_img, (50, 360))
+            else:
+                for i, c in enumerate(g.dealer):
+                    draw_card(c, 50 + i * 90, 180)
+                for i, c in enumerate(g.player):
+                    draw_card(c, 50 + i * 90, 360)
 
             screen.blit(font.render(f"Dealer: {hand_value(g.dealer)}", True, WHITE), (50, 150))
             screen.blit(font.render(f"Player: {hand_value(g.player)}", True, WHITE), (50, 520))
