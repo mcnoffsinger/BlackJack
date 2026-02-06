@@ -24,21 +24,21 @@ Notes from Lead/Instructor:
 Date: 2/5/2026
 
 ## Samuel Taiwo
-* What I did:
-* What I'm doing:
-* Blocked?
+* What I did: Wrote key features of the game in python
+* What I'm doing: Working on code and writing standup notes (scribe)
+* Blocked? No
 ## Jessica Kamienski
-* What I did:
-* What I'm doing:
-* Blocked?
+* What I did: Worked on trying to implement pygame
+* What I'm doing: Prioritizing code and directing work
+* Blocked? No
 ## Karan Modi
-* What I did: 
-* What I'm doing: 
-* Blocked?
+* What I did: Worked on trying to implement pygame
+* What I'm doing: Prioritizing code and testing as I go
+* Blocked? Yes; Pygame blocked on desktops
 ## Maxwell Noffsinger
-* What I did: 
-* What I'm doing: 
-* Blocked?
+* What I did: Recorded Standup notes, blockers, and worked on code
+* What I'm doing: Absent
+* Blocked? No
 Notes from Lead/Instructor:
 
 
@@ -46,20 +46,20 @@ Notes from Lead/Instructor:
 Date: 2/6/2026
 
 ## Samuel Taiwo
-* What I did:
+* What I did: Working on code and writing standup notes (scribe)
 * What I'm doing:
 * Blocked?
 ## Jessica Kamienski
-* What I did:
+* What I did: Prioritizing code and directing work
 * What I'm doing:
 * Blocked?
 ## Karan Modi
-* What I did: 
+* What I did: Prioritizing code and testing as I go
 * What I'm doing: 
 * Blocked?
 ## Maxwell Noffsinger
-* What I did: 
-* What I'm doing: 
-* Blocked?
+* What I did: Absent
+* What I'm doing: Absent
+* Blocked? No 
 Notes from Lead/Instructor:
 
