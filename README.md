@@ -5,7 +5,7 @@
 * Karan Modi
 * Maxwell Noffsinger
 ## Game Overview
-In this virtual blackjack game, players will compete with a dealer to win money by playing BlackJack. The player begins with 1500 dollars to bet and can gain or lose monety according to their bet each round. If the player reaches 0 or decides to stop playing, the game ends and a summary is printed to the screen.
+In this virtual blackjack game, players will compete with a dealer to win money by playing BlackJack. The player begins with 1500 dollars to bet and can gain or lose money according to their bet each round. If the player reaches 0 or decides to stop playing, the game ends and a summary is printed to the screen. There are modifiers and different game modes for the player to interct with.
 ## Game Type
 Card Game
 ## Core Mechanics
