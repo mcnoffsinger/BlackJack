@@ -6,9 +6,9 @@ Date: 2/4/2026
 * What I'm doing: Writing features for the game in python
 * Blocked? No
 ## Jessica Kamienski
-* What I did:
-* What I'm doing:
-* Blocked?
+* What I did: Planning out the logistics for blackjack
+* What I'm doing: Researching all the rules
+* Blocked? No
 ## Karan Modi
 * What I did: Helped write planning document and added templates to github for notes.
 * What I'm doing: Downloading and implementing Pygame
