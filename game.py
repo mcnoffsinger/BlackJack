@@ -19,7 +19,7 @@ AI_DIFFICULTIES = ["Easy", "Normal", "Hard"]
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("BlackJack")
 
-font = pygame.font.Font(None, 36)
+font = pygame.font.Font(None, 32)
 big_font = pygame.font.Font(None, 72)
 
 SUITS = ['Hearts', 'Diamonds', 'Clubs', 'Spades']
@@ -34,16 +34,15 @@ def create_deck():
 
 
 def card_value(card):
-    rank = card[0]
-    if rank in ['J', 'Q', 'K']:
+    if card[0] in ['J', 'Q', 'K']:
         return 10
-    elif rank == 'A':
+    if card[0] == 'A':
         return 11
-    return int(rank)
+    return int(card[0])
 
 
 def hand_value(hand):
-    value = sum(card_value(card) for card in hand)
+    value = sum(card_value(c) for c in hand)
     aces = sum(1 for c in hand if c[0] == 'A')
     while value > 21 and aces:
         value -= 10
@@ -59,10 +58,10 @@ def draw_card(card, x, y):
 
     rank, suit = card
     color = RED if suit in ['Hearts', 'Diamonds'] else BLACK
-    suit_symbol = {'Hearts': '♥', 'Diamonds': '♦', 'Clubs': '♣', 'Spades': '♠'}[suit]
+    symbol = {'Hearts': '♥', 'Diamonds': '♦', 'Clubs': '♣', 'Spades': '♠'}[suit]
 
     screen.blit(font.render(rank, True, color), (x + 5, y + 5))
-    screen.blit(font.render(suit_symbol, True, color), (x + 30, y + 50))
+    screen.blit(font.render(symbol, True, color), (x + 30, y + 50))
 
 
 def draw_hidden_card(x, y):
@@ -75,21 +74,9 @@ def draw_button(text, x, y, w, h):
     rect = pygame.Rect(x, y, w, h)
     pygame.draw.rect(screen, GRAY, rect)
     pygame.draw.rect(screen, WHITE, rect, 2)
-    surf = font.render(text, True, WHITE)
-    screen.blit(surf, surf.get_rect(center=rect.center))
+    label = font.render(text, True, WHITE)
+    screen.blit(label, label.get_rect(center=rect.center))
     return rect
-
-
-def draw_dropdown(title, selected, options, x, y, w, h, open_menu):
-    main_btn = draw_button(f"{title}: {selected}", x, y, w, h)
-    option_rects = []
-
-    if open_menu:
-        for i, opt in enumerate(options):
-            rect = draw_button(opt, x, y + (i + 1) * h, w, h)
-            option_rects.append((opt, rect))
-
-    return main_btn, option_rects
 
 
 # -------------------- GAME CLASS --------------------
@@ -97,26 +84,33 @@ class BlackJackGame:
     def __init__(self):
         self.money = 1500
         self.bet = 100
-        self.roulette_mode = False
+
+        # Permanent upgrades
+        self.up_extra_card = False
+        self.up_dealer_nerves = False
+        self.up_bonus_payout = False
+
         self.ai_difficulty = "Normal"
-        self.ai_menu_open = False
         self.reset_round()
 
     def reset_round(self):
         self.deck = create_deck()
         self.player_hand = []
         self.dealer_hand = []
+        self.dealt = False
         self.player_turn = True
         self.game_over = False
         self.message = ""
-        self.dealt = False
 
     def deal(self):
         if self.money <= 0:
             return
-        self.player_hand = [self.deck.pop(), self.deck.pop()]
+
+        cards = 3 if self.up_extra_card else 2
+        self.player_hand = [self.deck.pop() for _ in range(cards)]
         self.dealer_hand = [self.deck.pop(), self.deck.pop()]
         self.dealt = True
+
         if hand_value(self.player_hand) == 21:
             self.stand()
 
@@ -124,47 +118,33 @@ class BlackJackGame:
         if self.player_turn and not self.game_over:
             self.player_hand.append(self.deck.pop())
             if hand_value(self.player_hand) > 21:
-                if self.roulette_mode:
-                    self.message = "BANG! You busted and the dealer shot you! 💥"
-                    self.money = 0
-                else:
-                    self.message = "Bust! You lose!"
-                    self.money -= self.bet
+                self.money -= self.bet
+                self.message = "Bust!"
                 self.game_over = True
 
     def stand(self):
         self.player_turn = False
 
-        stand_threshold = {
-            "Easy": 15,
-            "Normal": 17,
-            "Hard": 19
-        }[self.ai_difficulty]
+        base_stand = {"Easy": 15, "Normal": 17, "Hard": 19}[self.ai_difficulty]
+        if self.up_dealer_nerves:
+            base_stand += 1
 
-        while hand_value(self.dealer_hand) < stand_threshold:
+        while hand_value(self.dealer_hand) < base_stand:
             self.dealer_hand.append(self.deck.pop())
 
-        p = hand_value(self.player_hand)
-        d = hand_value(self.dealer_hand)
+        p, d = hand_value(self.player_hand), hand_value(self.dealer_hand)
 
         if d > 21 or p > d:
-            self.message = "You win!"
-            self.money += self.bet
+            payout = int(self.bet * (1.5 if self.up_bonus_payout else 1))
+            self.money += payout
+            self.message = f"You win! +${payout}"
         elif p < d:
-            if self.roulette_mode:
-                self.message = "BANG! Dealer shoots you! 💥"
-                self.money = 0
-            else:
-                self.message = "Dealer wins!"
-                self.money -= self.bet
+            self.money -= self.bet
+            self.message = "Dealer wins!"
         else:
             self.message = "Push!"
 
         self.game_over = True
-
-    def change_bet(self, amt):
-        if not self.dealt:
-            self.bet = max(10, min(self.money, self.bet + amt))
 
 
 # -------------------- MAIN LOOP --------------------
@@ -180,87 +160,69 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN:
                 if not game.dealt:
                     if deal_btn.collidepoint(mouse):
                         game.deal()
-                    elif bet_up_btn.collidepoint(mouse):
-                        game.change_bet(10)
-                    elif bet_down_btn.collidepoint(mouse):
-                        game.change_bet(-10)
-                    elif roulette_btn.collidepoint(mouse):
-                        game.roulette_mode = not game.roulette_mode
-                    elif ai_btn.collidepoint(mouse):
-                        game.ai_menu_open = not game.ai_menu_open
-
-                    for opt, rect in ai_option_rects:
-                        if rect.collidepoint(mouse):
-                            game.ai_difficulty = opt
-                            game.ai_menu_open = False
-
-                elif not game.game_over:
-                    if hit_btn.collidepoint(mouse):
-                        game.hit()
-                    elif stand_btn.collidepoint(mouse):
-                        game.stand()
-
+                    if up1.collidepoint(mouse):
+                        game.up_extra_card = not game.up_extra_card
+                    if up2.collidepoint(mouse):
+                        game.up_dealer_nerves = not game.up_dealer_nerves
+                    if up3.collidepoint(mouse):
+                        game.up_bonus_payout = not game.up_bonus_payout
                 else:
-                    if new_round_btn.collidepoint(mouse):
-                        game = BlackJackGame() if game.money <= 0 else game.reset_round() or game
+                    if not game.game_over:
+                        if hit_btn.collidepoint(mouse):
+                            game.hit()
+                        if stand_btn.collidepoint(mouse):
+                            game.stand()
+                    else:
+                        if new_btn.collidepoint(mouse):
+                            game.reset_round()
 
-        screen.fill(RED if game.game_over and game.money <= 0 else GREEN)
+        screen.fill(GREEN)
 
-        screen.blit(big_font.render("BlackJack", True, WHITE), (SCREEN_WIDTH // 2 - 150, 10))
+        screen.blit(big_font.render("BlackJack", True, WHITE), (260, 10))
         screen.blit(font.render(f"Money: ${game.money}", True, WHITE), (20, 80))
-        screen.blit(font.render(f"Bet: ${game.bet}", True, WHITE), (20, 120))
+        screen.blit(font.render(f"Bet: ${game.bet}", True, WHITE), (20, 110))
 
         if not game.dealt:
-            screen.blit(font.render("Betting Menu", True, WHITE), (300, 200))
+            deal_btn = draw_button("Deal", 330, 240, 140, 50)
 
-            deal_btn = draw_button("Deal", 300, 260, 100, 50)
-            bet_up_btn = draw_button("+$10", 150, 115, 60, 30)
-            bet_down_btn = draw_button("-$10", 220, 115, 60, 30)
-            roulette_btn = draw_button(
-                f"Russian Roulette: {'ON' if game.roulette_mode else 'OFF'}",
-                430, 260, 300, 50
-            )
+            screen.blit(font.render("Permanent Upgrades", True, WHITE), (290, 300))
+            up1 = draw_button(f"Extra Card: {'ON' if game.up_extra_card else 'OFF'}", 240, 340, 320, 40)
+            up2 = draw_button(f"Dealer Nerves: {'ON' if game.up_dealer_nerves else 'OFF'}", 240, 390, 320, 40)
+            up3 = draw_button(f"Bonus Payout: {'ON' if game.up_bonus_payout else 'OFF'}", 240, 440, 320, 40)
 
-            ai_btn, ai_option_rects = draw_dropdown(
-                "AI Difficulty",
-                game.ai_difficulty,
-                AI_DIFFICULTIES,
-                300, 330, 220, 40,
-                game.ai_menu_open
-            )
-
-            hit_btn = stand_btn = new_round_btn = pygame.Rect(0, 0, 0, 0)
+            hit_btn = stand_btn = new_btn = pygame.Rect(0, 0, 0, 0)
 
         else:
-            screen.blit(font.render("Dealer:", True, WHITE), (50, 170))
+            screen.blit(font.render("Dealer", True, WHITE), (50, 160))
             for i, c in enumerate(game.dealer_hand):
                 if i == 0 and game.player_turn:
-                    draw_hidden_card(50 + i * 90, 200)
+                    draw_hidden_card(50 + i * 90, 190)
                 else:
-                    draw_card(c, 50 + i * 90, 200)
+                    draw_card(c, 50 + i * 90, 190)
 
-            screen.blit(font.render("Player:", True, WHITE), (50, 360))
+            if not game.player_turn:
+                screen.blit(font.render(f"Value: {hand_value(game.dealer_hand)}", True, WHITE), (50, 320))
+
+            screen.blit(font.render("Player", True, WHITE), (50, 340))
             for i, c in enumerate(game.player_hand):
-                draw_card(c, 50 + i * 90, 390)
+                draw_card(c, 50 + i * 90, 370)
+
+            screen.blit(font.render(f"Value: {hand_value(game.player_hand)}", True, WHITE), (50, 500))
 
             if not game.game_over:
-                hit_btn = draw_button("Hit", 300, 530, 80, 50)
-                stand_btn = draw_button("Stand", 400, 530, 80, 50)
-                new_round_btn = pygame.Rect(0, 0, 0, 0)
+                hit_btn = draw_button("Hit", 320, 530, 80, 40)
+                stand_btn = draw_button("Stand", 420, 530, 80, 40)
+                new_btn = pygame.Rect(0, 0, 0, 0)
             else:
-                screen.blit(font.render(game.message, True, WHITE), (SCREEN_WIDTH // 2 - 200, 520))
-                new_round_btn = draw_button(
-                    "Restart" if game.money <= 0 else "New Round",
-                    320, 560, 160, 40
-                )
+                screen.blit(font.render(game.message, True, WHITE), (320, 530))
+                new_btn = draw_button("New Round", 310, 560, 180, 35)
                 hit_btn = stand_btn = pygame.Rect(0, 0, 0, 0)
 
-            deal_btn = bet_up_btn = bet_down_btn = roulette_btn = ai_btn = pygame.Rect(0, 0, 0, 0)
-            ai_option_rects = []
+            deal_btn = up1 = up2 = up3 = pygame.Rect(0, 0, 0, 0)
 
         pygame.display.flip()
         clock.tick(60)
