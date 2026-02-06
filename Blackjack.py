@@ -5,6 +5,8 @@ import random
 money = 1500
 # round counter
 roundCount = 0
+#Money user spends overall
+moneySpent = 0
 
 #Method to initialize the game
 def initialize_game():
@@ -85,12 +87,14 @@ def game_summary():
 
 def handle_money():
     global money
+    global moneySpent
     print("How much money would you like to bet? ")
     betMoney = int(input())
 
     if money > betMoney:
         money = money - betMoney
         print("Transaction successful! Round Starting.")
+        moneySpent = moneySpent + betMoney
     else:
         print("You don't have enough money to bet!")
         ask_round()
