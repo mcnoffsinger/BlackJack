@@ -2,9 +2,9 @@
 Date: 2/4/2026
 
 ## Samuel Taiwo
-* What I did:
-* What I'm doing:
-* Blocked?
+* What I did: Helped to write the planning document and mapping out the game.
+* What I'm doing: Writing features for the game in python
+* Blocked? No
 ## Jessica Kamienski
 * What I did:
 * What I'm doing:
