@@ -117,6 +117,7 @@ class Game:
         self.turn = True
         self.over = False
         self.msg = ""
+        self.bet = max(10, min(self.bet, self.money))
 
     def deal(self):
         count = 2 + self.upgrades["cards"]["lvl"]
@@ -187,6 +188,8 @@ def main():
                         g.bet = min(g.money, g.bet + 10)
                     if bet_dn.collidepoint(mouse):
                         g.bet = max(10, g.bet - 10)
+                    if all_in.collidepoint(mouse) and g.money > 0:
+                        g.bet = g.money
                     if rr.collidepoint(mouse):
                         g.roulette = not g.roulette
                     if ai_btn.collidepoint(mouse):
@@ -220,6 +223,7 @@ def main():
 
         bet_up = draw_button("+", 140, 105, 30, 30)
         bet_dn = draw_button("-", 180, 105, 30, 30)
+        all_in = draw_button("ALL IN", 220, 105, 90, 30, RED)
 
         if not g.dealt:
             deal = draw_button("DEAL", 120, 260, 160, 60)
