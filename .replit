@@ -28,3 +28,6 @@ args = "python game.py"
 
 [workflows.workflow.metadata]
 outputType = "vnc"
+
+[deployment]
+deploymentTarget = "cloudrun"
