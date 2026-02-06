@@ -246,7 +246,7 @@ def main():
             ai_btn, ai_opts = draw_dropdown("AI", g.ai, AI_DIFFICULTIES, 520, 180, 240, 35, g.ai_open)
 
             rr_col = rainbow(t * 3) if g.roulette else GRAY
-            rr = draw_button("Russian Roulette", 520, 230, 240, 45, rr_col)
+            rr = draw_button("Russian BlackJack", 520, 230, 240, 45, rr_col)
 
             screen.blit(font.render("Upgrades", True, WHITE), (560, 300))
             up_btns = {}
