@@ -3,12 +3,18 @@ import random
 
 pygame.init()
 
+# -------------------- CONFIG --------------------
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
+
 WHITE = (255, 255, 255)
 GREEN = (34, 139, 34)
 BLACK = (0, 0, 0)
 RED = (180, 0, 0)
+GRAY = (70, 70, 70)
+BLUE = (0, 0, 128)
+
+AI_DIFFICULTIES = ["Easy", "Normal", "Hard"]
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("BlackJack")
@@ -19,10 +25,13 @@ big_font = pygame.font.Font(None, 72)
 SUITS = ['Hearts', 'Diamonds', 'Clubs', 'Spades']
 RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
 
+
+# -------------------- CARD LOGIC --------------------
 def create_deck():
     deck = [(rank, suit) for suit in SUITS for rank in RANKS]
     random.shuffle(deck)
     return deck
+
 
 def card_value(card):
     rank = card[0]
@@ -32,6 +41,7 @@ def card_value(card):
         return 11
     return int(rank)
 
+
 def hand_value(hand):
     value = sum(card_value(card) for card in hand)
     aces = sum(1 for c in hand if c[0] == 'A')
@@ -40,6 +50,8 @@ def hand_value(hand):
         aces -= 1
     return value
 
+
+# -------------------- DRAWING --------------------
 def draw_card(card, x, y):
     rect = pygame.Rect(x, y, 80, 120)
     pygame.draw.rect(screen, WHITE, rect)
@@ -52,23 +64,42 @@ def draw_card(card, x, y):
     screen.blit(font.render(rank, True, color), (x + 5, y + 5))
     screen.blit(font.render(suit_symbol, True, color), (x + 30, y + 50))
 
+
 def draw_hidden_card(x, y):
     rect = pygame.Rect(x, y, 80, 120)
-    pygame.draw.rect(screen, (0, 0, 128), rect)
+    pygame.draw.rect(screen, BLUE, rect)
     pygame.draw.rect(screen, BLACK, rect, 2)
 
-def draw_button(text, x, y, w, h):
-    pygame.draw.rect(screen, (70, 70, 70), (x, y, w, h))
-    pygame.draw.rect(screen, WHITE, (x, y, w, h), 2)
-    surf = font.render(text, True, WHITE)
-    screen.blit(surf, surf.get_rect(center=(x + w // 2, y + h // 2)))
-    return pygame.Rect(x, y, w, h)
 
+def draw_button(text, x, y, w, h):
+    rect = pygame.Rect(x, y, w, h)
+    pygame.draw.rect(screen, GRAY, rect)
+    pygame.draw.rect(screen, WHITE, rect, 2)
+    surf = font.render(text, True, WHITE)
+    screen.blit(surf, surf.get_rect(center=rect.center))
+    return rect
+
+
+def draw_dropdown(title, selected, options, x, y, w, h, open_menu):
+    main_btn = draw_button(f"{title}: {selected}", x, y, w, h)
+    option_rects = []
+
+    if open_menu:
+        for i, opt in enumerate(options):
+            rect = draw_button(opt, x, y + (i + 1) * h, w, h)
+            option_rects.append((opt, rect))
+
+    return main_btn, option_rects
+
+
+# -------------------- GAME CLASS --------------------
 class BlackJackGame:
     def __init__(self):
         self.money = 1500
         self.bet = 100
         self.roulette_mode = False
+        self.ai_difficulty = "Normal"
+        self.ai_menu_open = False
         self.reset_round()
 
     def reset_round(self):
@@ -103,7 +134,14 @@ class BlackJackGame:
 
     def stand(self):
         self.player_turn = False
-        while hand_value(self.dealer_hand) < 17:
+
+        stand_threshold = {
+            "Easy": 15,
+            "Normal": 17,
+            "Hard": 19
+        }[self.ai_difficulty]
+
+        while hand_value(self.dealer_hand) < stand_threshold:
             self.dealer_hand.append(self.deck.pop())
 
         p = hand_value(self.player_hand)
@@ -128,6 +166,8 @@ class BlackJackGame:
         if not self.dealt:
             self.bet = max(10, min(self.money, self.bet + amt))
 
+
+# -------------------- MAIN LOOP --------------------
 def main():
     clock = pygame.time.Clock()
     game = BlackJackGame()
@@ -150,6 +190,13 @@ def main():
                         game.change_bet(-10)
                     elif roulette_btn.collidepoint(mouse):
                         game.roulette_mode = not game.roulette_mode
+                    elif ai_btn.collidepoint(mouse):
+                        game.ai_menu_open = not game.ai_menu_open
+
+                    for opt, rect in ai_option_rects:
+                        if rect.collidepoint(mouse):
+                            game.ai_difficulty = opt
+                            game.ai_menu_open = False
 
                 elif not game.game_over:
                     if hit_btn.collidepoint(mouse):
@@ -163,13 +210,13 @@ def main():
 
         screen.fill(RED if game.game_over and game.money <= 0 else GREEN)
 
-        screen.blit(big_font.render("BlackJack", True, WHITE),
-                    (SCREEN_WIDTH // 2 - 150, 10))
+        screen.blit(big_font.render("BlackJack", True, WHITE), (SCREEN_WIDTH // 2 - 150, 10))
         screen.blit(font.render(f"Money: ${game.money}", True, WHITE), (20, 80))
         screen.blit(font.render(f"Bet: ${game.bet}", True, WHITE), (20, 120))
 
         if not game.dealt:
             screen.blit(font.render("Betting Menu", True, WHITE), (300, 200))
+
             deal_btn = draw_button("Deal", 300, 260, 100, 50)
             bet_up_btn = draw_button("+$10", 150, 115, 60, 30)
             bet_down_btn = draw_button("-$10", 220, 115, 60, 30)
@@ -177,6 +224,15 @@ def main():
                 f"Russian Roulette: {'ON' if game.roulette_mode else 'OFF'}",
                 430, 260, 300, 50
             )
+
+            ai_btn, ai_option_rects = draw_dropdown(
+                "AI Difficulty",
+                game.ai_difficulty,
+                AI_DIFFICULTIES,
+                300, 330, 220, 40,
+                game.ai_menu_open
+            )
+
             hit_btn = stand_btn = new_round_btn = pygame.Rect(0, 0, 0, 0)
 
         else:
@@ -196,20 +252,21 @@ def main():
                 stand_btn = draw_button("Stand", 400, 530, 80, 50)
                 new_round_btn = pygame.Rect(0, 0, 0, 0)
             else:
-                screen.blit(font.render(game.message, True, WHITE),
-                            (SCREEN_WIDTH // 2 - 200, 520))
+                screen.blit(font.render(game.message, True, WHITE), (SCREEN_WIDTH // 2 - 200, 520))
                 new_round_btn = draw_button(
                     "Restart" if game.money <= 0 else "New Round",
                     320, 560, 160, 40
                 )
                 hit_btn = stand_btn = pygame.Rect(0, 0, 0, 0)
 
-            deal_btn = bet_up_btn = bet_down_btn = roulette_btn = pygame.Rect(0, 0, 0, 0)
+            deal_btn = bet_up_btn = bet_down_btn = roulette_btn = ai_btn = pygame.Rect(0, 0, 0, 0)
+            ai_option_rects = []
 
         pygame.display.flip()
         clock.tick(60)
 
     pygame.quit()
+
 
 if __name__ == "__main__":
     main()
