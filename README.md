@@ -16,5 +16,13 @@ Card Game
 5. Player can double down or surrender
 
 ## How to Run
+### How to Run
 * Python 3.8+
-* Pygame
+* Pygame Downloaded
+
+### Steps
+1. Clone or download this repo
+2. Open terminal/command prompt
+3. Navigate to the repo folder
+4. Run: python game.py
+5. Follow on-screen prompts
