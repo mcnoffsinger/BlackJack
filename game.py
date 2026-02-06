@@ -124,6 +124,21 @@ class Game:
         self.player = [self.deck.pop() for _ in range(count)]
         self.dealer = [self.deck.pop(), self.deck.pop()]
         self.dealt = True
+        p = hand_value(self.player_hand)
+        d = hand_value(self.dealer_hand)
+
+        if p == 21 or d == 21:
+            self.player_turn = False
+            self.game_over = True
+
+            if p == 21 or d == 21:
+                self.message = "Both have Blackjack! Push!"
+            elif p == 21:
+                self.message = "Blackjack! You win!"
+                self.money += int(self.bet * 1.5)
+            else:
+                self.message = "BlDealer has Blackjack!"
+                self.money = max(0, self.money - self.bet)
 
     def hit(self):
         self.player.append(self.deck.pop())
