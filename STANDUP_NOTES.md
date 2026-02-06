@@ -47,15 +47,15 @@ Date: 2/6/2026
 
 ## Samuel Taiwo
 * What I did: Working on code and writing standup notes (scribe)
-* What I'm doing:
+* What I'm doing: Continue working on code and updating the readME
 * Blocked?
 ## Jessica Kamienski
 * What I did: Prioritizing code and directing work
-* What I'm doing:
+* What I'm doing: Continue working on the code and finding bugs
 * Blocked?
 ## Karan Modi
 * What I did: Prioritizing code and testing as I go
-* What I'm doing: 
+* What I'm doing: Continue working on the code and the documentation of bugs
 * Blocked?
 ## Maxwell Noffsinger
 * What I did: Absent
