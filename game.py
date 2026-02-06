@@ -147,21 +147,25 @@ class Game:
         self.player = [self.deck.pop() for _ in range(count)]
         self.dealer = [self.deck.pop(), self.deck.pop()]
         self.dealt = True
-        p = hand_value(self.player_hand)
-        d = hand_value(self.dealer_hand)
 
-        if p == 21 or d == 21:
-            self.player_turn = False
-            self.game_over = True
+        p = hand_value(self.player)
+        d = hand_value(self.dealer)
 
-            if p == 21 or d == 21:
-                self.message = "Both have Blackjack! Push!"
-            elif p == 21:
-                self.message = "Blackjack! You win!"
-                self.money += int(self.bet * 1.5)
-            else:
-                self.message = "BlDealer has Blackjack!"
-                self.money = max(0, self.money - self.bet)
+        if p == 21 and d == 21:
+            self.msg = "Both have Blackjack! PUSH"
+            self.over = True
+
+        elif p == 21:
+            self.msg = "Blackjack! You win!"
+            self.money += int(self.bet * 1.5)
+            self.over = True
+
+        elif d == 21:
+            self.msg = "Dealer has Blackjack!"
+            self.money = max(0, self.money - self.bet)
+            self.lost_screen = True
+            self.over = True
+
 
     def hit(self):
         self.player.append(self.deck.pop())
@@ -209,6 +213,7 @@ class Game:
             self.msg = "You lost! Want to play again?"
             self.lost_screen = True
             self.over = True
+            self.money = max(0, self.money - self.bet)
 
 
 # -------------------- MAIN LOOP --------------------
@@ -266,7 +271,7 @@ def main():
                             anim_offset = 0
 
         # ---------------- LOST SCREEN ----------------
-        if g.lost_screen:
+        if g.lost_screen and g.dealt:
             anim_offset += 0.1
             screen.fill(RED)
             y_offset = int(10 * math.sin(anim_offset))
