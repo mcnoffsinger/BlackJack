@@ -8,7 +8,7 @@ pygame.init()
 # -------------------- CONFIG --------------------
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
-
+#establishing constants for easy reference to colors
 WHITE = (255, 255, 255)
 GREEN = (34, 139, 34)
 BLACK = (0, 0, 0)
@@ -19,16 +19,21 @@ BLUE = (0, 0, 128)
 
 AI_DIFFICULTIES = ["Easy", "Normal", "Hard"]
 
+#creates the game window
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("BlackJack")
+
 
 font = pygame.font.Font(None, 26)
 big_font = pygame.font.Font(None, 72)
 
+
+# makes the cards
 SUITS = ['Hearts', 'Diamonds', 'Clubs', 'Spades']
 RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
 
 # -------------------- RUSSIAN BLACKJACK IMAGES --------------------
+#the images of the revolvers pointing at you used in the russian roulette mode
 player_img = pygame.Surface((120, 120), pygame.SRCALPHA)
 player_img.fill((0, 0, 0, 0))  # Transparent
 pygame.draw.circle(player_img, (255, 255, 0), (60, 60), 50)  # Face
@@ -39,12 +44,13 @@ dealer_img.fill((0, 0, 0, 0))
 pygame.draw.circle(dealer_img, (255, 255, 255), (60, 60), 50)  # Dealer face
 
 # -------------------- GAME LOGIC --------------------
+# creates and shuffles the deck based on the constants defined on line 32-33
 def create_deck():
     deck = [(rank, suit) for suit in SUITS for rank in RANKS]
     random.shuffle(deck)
     return deck
 
-
+#evaluates the card values for face cards and aces
 def card_value(card):
     if card[0] in ['J', 'Q', 'K']:
         return 10
@@ -55,13 +61,13 @@ def card_value(card):
 
 def hand_value(hand):
     value = sum(card_value(c) for c in hand)
-    aces = sum(1 for c in hand if c[0] == 'A')
-    while value > 21 and aces:
+    aces = sum(1 for c in hand if c[0] == 'A')#counts the number of aces in the hand
+    while value > 21 and aces:#aces are worth 11 if the player has less than 21, but if they have 21 then they are only worth 1.
         value -= 10
         aces -= 1
     return value
 
-
+#makes the russian roulette button rainbow colored
 def rainbow(t):
     return (
         int(128 + 127 * math.sin(t)),
@@ -96,7 +102,7 @@ def draw_dropdown(title, value, options, x, y, w, h, open_menu):
             opts.append((o, r))
     return main, opts
 
-
+# drawing it on the screen, not in the game.
 def draw_card(card, x, y):
     # Draw card background
     r = pygame.Rect(x, y, 80, 120)
@@ -104,7 +110,7 @@ def draw_card(card, x, y):
     pygame.draw.rect(screen, BLACK, r, 2)
 
     # Draw rank and suit
-    suit_symbols = {'Hearts':'♥', 'Diamonds':'♦', 'Clubs':'♣', 'Spades':'♠'}
+    suit_symbols = {'Hearts':' H', 'Diamonds':' D', 'Clubs':' C', 'Spades':' S'}
     color = RED if card[1] in ['Hearts', 'Diamonds'] else BLACK
     text = f"{card[0]}{suit_symbols[card[1]]}"
     screen.blit(font.render(text, True, color), (x + 6, y + 6))
@@ -113,11 +119,12 @@ def draw_card(card, x, y):
 # -------------------- GAME CLASS --------------------
 class Game:
     def __init__(self):
+        #the initial setup
         self.money = 1500
         self.bet = 100
         self.wins = 0
         self.up_points = 0
-
+        
         self.roulette = False
         self.ai = "Normal"
         self.ai_open = False
@@ -253,7 +260,7 @@ def main():
                         if r.collidepoint(mouse):
                             g.ai = o
                             g.ai_open = False
-                    for key, btn in up_btns.items():
+                    for key, btn in up_btns.items():#this is where the player gets upgrades
                         if btn.collidepoint(mouse):
                             u = g.upgrades[key]
                             if g.up_points > 0 and u["lvl"] < u["max"]:
