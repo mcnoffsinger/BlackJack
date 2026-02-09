@@ -10,3 +10,5 @@ These relate to the game.py file, including the UI issues and the code issues to
 6. Upgrade points don't work sometimes
 7. Player sometimes starts with more than 21 cards.
 8. Other game modes (Russian Blackjack) Don't work
+9. Russian BlackJack Crashes game when you lose.
+10. You can bet at 0 dollars, essentially creating 10 dollars out of thin air.
