@@ -24,26 +24,26 @@ Card Game
 
 Setup Instructions
 
-Clone or download this repository.
+1. Clone or download this repository.
 
-Open a terminal / command prompt
-(VS Code or PyCharm recommended).
+2. Open a terminal / command prompt
+* (VS Code or PyCharm recommended).
 
-Navigate to the project folder.
+3. Navigate to the project folder.
 
-Install Pygame:
-
+4. Install Pygame:
+```python
 python -m pip install pygame-ce
+```
 
-
-Run the game:
-
+5. Run the game:
+```python
 python Game.py
+```
 
+6. Follow the on-screen prompts.
 
-Follow the on-screen prompts.
-
-If it doesn’t work (recommended fix)
+### If it doesn’t work (recommended fix)
 
 Create and use a virtual environment, then retry the installs.
 
@@ -54,17 +54,21 @@ python -m venv venv
 Set-ExecutionPolicy Unrestricted -Scope CurrentUser
 
 3. Activate the virtual environment
+```
 venv\Scripts\Activate
-
-
-You should now see (venv) in your terminal.
+```
+* You should now see (venv) in your terminal.
 
 4. Reinstall required packages
+```python
 python -m pip install pygame-ce
 pip install requests pytest
+```
 
 5. Run the game again
+```python
 python Game.py
+```
 6. Follow on-screen prompts
 
 ## Win & Lose Conditions
