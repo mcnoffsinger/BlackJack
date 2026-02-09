@@ -13,12 +13,14 @@ Card Game
 2. Full Deck of cards is simulated to correctly deal random cards
 3. Player can customize their bet at the start of each round
 4. Pygame visuals (if we can get it to work)
-5. Player can double down or surrender
+5. Player can select AI difficulty and unlock extra cards by playing rounds.
+6. Russian roulette mode
 
 ## How to Run
 ### How to Run
 * Python 3.8+
-* Pygame Downloaded
+* Pygame Downloaded: python -m pip install pygame-ce
+* In terminal: python game.py
 
 ### Steps
 1. Clone or download this repo
@@ -31,9 +33,11 @@ Card Game
 ### Win
 * If the user gets a hand with the value of 21
 * If the user gets a hand with a value higher than the dealer but not over 21
+* The player gains the amount of money they bet and can play again
 ### Lose
 * If the user gets a hand over the value of 21
-* if the player gets a hand with a value lower than the dealer and the dealer's value is not over 21
+* If the player gets a hand with a value lower than the dealer and the dealer's value is not over 21
+* The player loses the amount of money they bet and are shown the loss screen. 
 
 ## Controls / Input
 User will only use their mouse clicker to make descisions during the game.
