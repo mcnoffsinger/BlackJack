@@ -73,7 +73,7 @@ def calculate_hand_value(hand):
             aces += 1
 
     # Adjust Aces from 11 → 1 if needed
-    while total > 21 and aces > 0:
+    while total >= 21 and aces > 0:
         total -= 10
         aces -= 1
 
@@ -81,7 +81,7 @@ def calculate_hand_value(hand):
 
 
 def game_summary():
-    print("YOur summary (placeholder)")
+    print("Your summary (placeholder)")
     print(f"Rounds played: {roundCount}")
 
 
