@@ -22,18 +22,49 @@ Card Game
 * Pygame Downloaded: python -m pip install pygame-ce
 * In terminal: python game.py
 
-### Steps
-1. Clone or download this repo
-2. Open terminal/command prompt (perferably Pycharm or VScode)
-3. Navigate to the project folder
-4. Download Pygame
-```python
+Setup Instructions
+
+Clone or download this repository.
+
+Open a terminal / command prompt
+(VS Code or PyCharm recommended).
+
+Navigate to the project folder.
+
+Install Pygame:
+
 python -m pip install pygame-ce
-```
-5. Run
-```python
+
+
+Run the game:
+
 python Game.py
-```
+
+
+Follow the on-screen prompts.
+
+If it doesn’t work (recommended fix)
+
+Create and use a virtual environment, then retry the installs.
+
+1. Create a virtual environment
+python -m venv venv
+
+2. Allow script execution (Windows only)
+Set-ExecutionPolicy Unrestricted -Scope CurrentUser
+
+3. Activate the virtual environment
+venv\Scripts\Activate
+
+
+You should now see (venv) in your terminal.
+
+4. Reinstall required packages
+python -m pip install pygame-ce
+pip install requests pytest
+
+5. Run the game again
+python Game.py
 6. Follow on-screen prompts
 
 ## Win & Lose Conditions
