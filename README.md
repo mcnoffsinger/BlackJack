@@ -22,10 +22,17 @@ Card Game
 
 ### Steps
 1. Clone or download this repo
-2. Open terminal/command prompt
-3. Navigate to the repo folder
-4. Run: python game.py
-5. Follow on-screen prompts
+2. Open terminal/command prompt (perferably Pycharm or VScode)
+3. Navigate to the project folder
+4. Download Pygame
+```python
+python -m pip install pygame-ce
+```
+5. Run
+```python
+Game.py
+```
+6. Follow on-screen prompts
 
 ## Win & Lose Conditions
 ### Win
