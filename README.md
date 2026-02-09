@@ -32,7 +32,7 @@ python -m pip install pygame-ce
 ```
 5. Run
 ```python
-Game.py
+python Game.py
 ```
 6. Follow on-screen prompts
 
