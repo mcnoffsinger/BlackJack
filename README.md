@@ -37,3 +37,8 @@ Card Game
 
 ## Controls / Input
 User will only use their mouse clicker to make descisions during the game.
+
+## Design Decisions
+### Why we chose BlackJack
+* Concepts of BlackJack are fimiliar within the whole team
+* Can be coded easily with Pygame within a IDE. (Not a lot of problems)
