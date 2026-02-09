@@ -38,7 +38,7 @@ Date: 2/5/2026
 * Blocked? Yes; Pygame blocked on desktops
 ## Maxwell Noffsinger
 * What I did: Recorded Standup notes, blockers, and worked on code
-* What I'm doing: Absent
+* What I'm doing: Deleted useless files from codebase.
 * Blocked? No
 
 Notes from Lead/Instructor: Found a solution for using Pygame by using an online IDE like replit
