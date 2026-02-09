@@ -66,3 +66,26 @@ Date: 2/6/2026
 
 Notes from Lead/Instructor: Work was productive today as a lot of logic was fixed and a lot of documentation was done
 
+
+# Day 26 (Monday)
+Date: 2/9/2026
+
+## Samuel Taiwo
+* What I did: tested game to find bugs. Fixed bugs and worked on documentation (QA-tester)
+* What I'm doing: Updated the README.md file
+* Blocked? No
+## Jessica Kamienski
+* What I did: Organizing file structure and documenting code. (no role)
+* What I'm doing: working on bug document
+* Blocked? No
+## Karan Modi
+* What I did: Updated Wiki file and cleaned up codebase by deleting useless files (scribe)
+* What I'm doing: Continue working on the code and the documentation of bugs
+* Blocked? No
+## Maxwell Noffsinger
+* What I did: Added bugs and commented code. Worked on other documentation as well (lead developer)
+* What I'm doing: Commenting the code to make it more readable.
+* Blocked? No
+
+Notes from Lead/Instructor: We wrapped up everything today. Even with a fire drill mid-class we were able to get good work done. 
+
