@@ -169,7 +169,8 @@ class Game:
         elif p < d:
             self.lose()
         else:
-            self.msg = "Push"
+            if self.msg == "":
+                self.msg = "Push"
             self.over = True
 
     def finish_dealer(self):
@@ -206,6 +207,24 @@ class Game:
             self.money = max(0, self.money - self.bet)
             self.msg = f"You lost -${self.bet}"
             self.over = True
+    
+    def finish_dealer(self):
+        # Dealer stress mechanic
+        nerves_level = self.upgrades["nerves"]["lvl"]
+        nerves_chance = {0: 0, 1: 0.3, 2: 0.6, 3: 0.9}[nerves_level]
+
+    # If dealer has more than 1 card, stress may burn a card
+        if nerves_chance > 0 and len(self.dealer) > 1 and random.random() < nerves_chance:
+            burned_card = random.choice(self.dealer[1:])  # Don't burn first card
+            self.dealer.remove(burned_card)
+            self.msg = f"Dealer stressed out! Card {burned_card[0]} burned 🔥"
+
+        # Dealer draws normally based on AI difficulty
+        base = {"Easy": 15, "Normal": 17, "Hard": 19}[self.ai]
+        base += nerves_level  # Increase dealer base threshold slightly
+        while hand_value(self.dealer) < base:
+            self.dealer.append(self.deck.pop())
+
 
 
 # -------------------- MAIN LOOP --------------------
@@ -363,6 +382,10 @@ def main():
 
         pygame.display.flip()
         clock.tick(60)
+
+
+
+        
 
     pygame.quit()
 
