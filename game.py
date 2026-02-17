@@ -178,6 +178,9 @@ class Game:
         self.rr_anim = 0
         self.rr_result = None
 
+        self.rr_multiplier = 1
+        self.rr_streak = 0
+
         self.burn_popup = ""
         self.burn_timer = 0
 
@@ -220,9 +223,7 @@ class Game:
             self.play_russian_roulette()
             self.dealt = True
             return
-        
-
-        # Reworked Extra Cards: Instead of more cards, we "re-roll" the start
+# Reworked Extra Cards: Instead of more cards, we "re-roll" the start
         # Level 0: 1 attempt, Level 1: 2 attempts, Level 2: 3 attempts
         attempts = 1 + self.upgrades["cards"]["lvl"]
         best_hand = []
@@ -234,7 +235,7 @@ class Game:
             random.shuffle(temp_deck)
             test_hand = [temp_deck.pop(), temp_deck.pop()]
             test_val = hand_value(test_hand)
-            
+
             # Keep the hand if it's better than current best but not bust
             if test_val > best_value and test_val <= 21:
                 best_hand = test_hand
@@ -246,8 +247,8 @@ class Game:
         for card in self.player:
             if card in self.deck:
                 self.deck.remove(card)
-        
 
+       
         self.dealer = [self.deck.pop(), self.deck.pop()]
         self.dealt = True
         self.flipping = True
@@ -371,12 +372,20 @@ def main():
 
             # ROULETTE RESULT EVENT
             if e.type == pygame.USEREVENT + 1 and g.rr_running:
-                if g.rr_result:
+
+                if g.rr_result:  # player died
                     g.msg = "💥 BANG! You died!"
                     g.money = 0
-                else:
-                    g.msg = "Click... You survived! +$1,000,000"
-                    g.money += 1000000
+                    g.rr_multiplier = 1
+                    g.rr_streak = 0
+
+                else:  # survived
+                    g.rr_streak += 1
+                    g.rr_multiplier = 2 ** g.rr_streak
+                    winnings = 1000000 * g.rr_multiplier
+
+                    g.msg = f"Click... You survived! +${winnings:,} (x{g.rr_multiplier})"
+                    g.money += winnings
 
                 g.over = True
                 g.rr_running = False
@@ -490,6 +499,11 @@ def main():
         if not g.dealt:
             deal = draw_button("DEAL", 120, 260, 160, 60)
             ai_btn, ai_opts = draw_dropdown("AI", g.ai, AI_DIFFICULTIES, 520, 180, 240, 35, g.ai_open)
+
+            # RR Multiplier indicator
+            if g.rr_multiplier > 1:
+                txt = font.render(f"Roulette Multiplier: x{g.rr_multiplier}", True, (255, 200, 120))
+                screen.blit(txt, (520, 150))
 
             rr_col = rainbow(t * 3) if g.roulette else GRAY
             rr = draw_button("Russian Roulette", 520, 230, 240, 45, rr_col)
