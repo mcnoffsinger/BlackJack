@@ -14,6 +14,12 @@ Card Game
 3. Player can customize their bet at the start of each round
 4. Pygame visuals (if we can get it to work)
 5. Player can double down or surrender
+6. Player can buy upgrades to make the game more interesting
+   * Starting Luck: You start with luckier cards.
+   * Dealer Nerves: dealer will sometimes burn a card, harming their chances of winning
+   * Bonus Payout: extra money for each win
+7. Player can play Russian Roulette, where they have a 1 in 6 chance of losing everything for a huge payout.   
+   
 
 ## How to Run
 ### How to Run
@@ -31,9 +37,12 @@ Card Game
 ### Win
 * If the user gets a hand with the value of 21
 * If the user gets a hand with a value higher than the dealer but not over 21
-### Lose
+### Lose (individual game)
 * If the user gets a hand over the value of 21
 * if the player gets a hand with a value lower than the dealer and the dealer's value is not over 21
+### Lose (full game over)
+* If the player reaches 0 money
+* Game restarts and you see the game over screen
 
 ## Controls / Input
 User will only use their mouse clicker to make descisions during the game.
