@@ -12,7 +12,7 @@ SCREEN_HEIGHT = 600
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (200, 40, 40)
-GREEN = (22, 92, 45)       # deep casino green
+GREEN = (22, 92, 45)  # deep casino green
 GOLD = (255, 215, 0)
 GRAY = (70, 70, 70)
 DARK = (40, 40, 40)
@@ -20,7 +20,8 @@ BLUE = (0, 0, 128)
 
 AI_DIFFICULTIES = ["Easy", "Normal", "Hard"]
 
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+
 pygame.display.set_caption("BlackJack")
 
 font = pygame.font.Font(None, 28)
@@ -28,7 +29,6 @@ big_font = pygame.font.Font(None, 80)
 
 SUITS = ['Hearts', 'Diamonds', 'Clubs', 'Spades']
 RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
-
 
 # -------------------- TABLE TEXTURE --------------------
 table_texture = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -39,7 +39,6 @@ for i in range(0, SCREEN_WIDTH, 40):
     pygame.draw.line(table_texture, (18, 80, 38), (i, 0), (i, SCREEN_HEIGHT))
 for j in range(0, SCREEN_HEIGHT, 40):
     pygame.draw.line(table_texture, (18, 80, 38), (0, j), (SCREEN_WIDTH, j))
-
 
 # -------------------- VIGNETTE LIGHTING --------------------
 vignette = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
@@ -147,6 +146,7 @@ def draw_card(card, x, y, scale_x=1):
     screen.blit(rank, (r.x + 8, r.y + 6))
     screen.blit(suit, (r.x + 8, r.y + 28))
 
+
 # -------------------- GAME CLASS --------------------
 class Game:
     def __init__(self):
@@ -223,7 +223,7 @@ class Game:
             self.play_russian_roulette()
             self.dealt = True
             return
-# Reworked Extra Cards: Instead of more cards, we "re-roll" the start
+        # Reworked Extra Cards: Instead of more cards, we "re-roll" the start
         # Level 0: 1 attempt, Level 1: 2 attempts, Level 2: 3 attempts
         attempts = 1 + self.upgrades["cards"]["lvl"]
         best_hand = []
@@ -241,14 +241,12 @@ class Game:
                 best_hand = test_hand
                 best_value = test_val
 
-
         # Apply the best hand found and remove those specific cards from the actual deck
         self.player = best_hand
         for card in self.player:
             if card in self.deck:
                 self.deck.remove(card)
 
-       
         self.dealer = [self.deck.pop(), self.deck.pop()]
         self.dealt = True
         self.flipping = True
@@ -472,7 +470,6 @@ def main():
             sub = font.render("Click to Restart", True, WHITE)
             screen.blit(sub, sub.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 40)))
 
-
             pygame.display.flip()
             clock.tick(60)
             continue
@@ -551,7 +548,6 @@ def main():
                 rr_title = big_font.render("Russian Roulette", True, WHITE)
                 screen.blit(rr_title, rr_title.get_rect(center=(SCREEN_WIDTH // 2, 80)))
 
-
                 pygame.display.flip()
                 clock.tick(60)
                 continue
@@ -602,7 +598,6 @@ def main():
             up_btns = {}
 
         # ---------------- FINAL TOUCH: VIGNETTE ----------------
-
 
         pygame.display.flip()
         clock.tick(60)
